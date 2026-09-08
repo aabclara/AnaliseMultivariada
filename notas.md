@@ -91,8 +91,60 @@
         ```
         t.test(var1, var2)
         ```
+# Teste de M-Box
+    Teste de comparação multivariada que verifica a homogeneidade (igualdade) das matrizes de variância-covariância entre dois ou mais grupos.
+    * Pré-requisito para rodar técnicas MANOVA e Análise Discriminante.
+    * Interpretação: 
+        * H0: As matrizes de variância-covariância dos grupos são homogêneas (iguais entre si):
+            * Se p-valeu > 0,05: Aceita-se H0 (as matrizes são homogêneas)
+            * Se p-valeu <= 0,05: Rejeita-se H0 (as matrizes não são homogêneas)
+                * Cola de resposta: 
+                "Ao nível de significância de 5%, conclui-se que as matrizes de variância-covariância podem ser consideradas homogêneas (p > 0,05), atendendo ao pressuposto multivariado."
+            ```
+            # 1. Carrega o pacote (se não tiver instalado, rode: install.packages("biotools"))
+            library(biotools)
 
-# Visualização Gráfica
+            # 2. Executa o teste M de Box
+            # Sintaxe: boxM(data = variaveis_numericas, grouping = variavel_categorica)
+            resultado_box <- boxM(dados[, c("nota_estatistica", "nota_matematica", "nota_programacao")], 
+                                            grouping = dados$curso)
+
+            # 3. Imprime o resultado
+            print(resultado_box)
+            ```
+
+## ANOVA
+    Um teste para comparar as médias de 3 ou mais grupos simultaneamente
+    * Interpretação:
+        * Apenas diz SIM ou NÃO para a pergunta: "As médias de todas as variáveis são idênticas?"
+        * Você olha a coluna Pr(>F) (o p-value):
+            * Se for <= 0,05: Rejeita H0. Existe diferença significativa entre as médias.
+            * Se for > 0,05: Não rejeita H0. Não existe diferença significativa entre as médias.
+        ```
+        # 1. Ajuste e sumário da ANOVA (checar coluna Pr(>F))
+        modelo <- aov(nota_estatistica ~ curso, data = dados)
+        summary(modelo)
+        ```
+
+## Teste de Tukey (Post-Hoc)
+    Teste complementar (chamado de post-hoc, ou seja, "feito após a ANOVA"). 
+    Ele só deve ser interpretado se a ANOVA der significativa (p <= 0,05).
+    * O teste de Tukey pega todos os pares possíveis e os compara um a um.
+    * Interpretação: 
+        * Olhe apenas a última coluna: p adj
+            * Par com p adj < 0,05: Existe diferença real e estatisticamente significativa entre esses dois cursos específicos.
+            * Par com p adj >= 0,05: Não existe diferença real entre os dois cursos.
+
+        ```
+        # 2. Teste de Tukey post-hoc (checar coluna p adj < 0.05)
+        TukeyHSD(modelo)
+
+        # 3. Tabela com as médias de cada curso para ver a maior
+        aggregate(nota_estatistica ~ curso, data = dados, FUN = mean)
+        ```
+        
+
+## Visualização Gráfica
     * Histograma:
         ```
         hist(dados$nota_estatistica)
