@@ -157,3 +157,5 @@
         plot(dados$nota_estatistica, dados$nota_matematica)
         plot(dados$horas_estudo, dados$nota_programacao)
         ```
+
+Link do chat com o Gemini: https://share.gemini.google/p9OaKRKeTl8U
